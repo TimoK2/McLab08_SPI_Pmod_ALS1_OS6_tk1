@@ -32,6 +32,7 @@
 * 
 * Timo Karppinen 17.11.2020
 **************************************************************/
+#include "ThisThread.h"
 #include "mbed.h"
 
 DigitalOut LED(D1);  // LD1 to LD4 pin names are linked to D13 in L432KC.
@@ -48,11 +49,12 @@ int main()
 {   
 // SPI for the ALS        
         // Setup the spi for 8 bit data, high steady state clock,
-        // second edge capture, with a 12MHz clock rate
+        // second edge capture, with a 2MHz clock rate
         spi.format(8,0);           
-        spi.frequency(12000000);
+        spi.frequency(2000000);
         // ready to wait the conversion start
         alsCS.write(1);
+        ThisThread::sleep_for(1ms);
 
     while (true) {
      
@@ -85,10 +87,12 @@ int getALS()
     // Begin the conversion process and serial data output
     alsCS.write(0); 
     // Reading two 8bit bytes by writing two dymmy 8bit bytes
+    ThisThread::sleep_for(1ms);
     alsByte0 = spi.write(0x00);
     alsByte1 = spi.write(0x00);
     // End of serial data output and back to tracking mode
     alsCS.write(1);
+    ThisThread::sleep_for(1ms);
     // Check the http://www.ti.com/lit/ds/symlink/adc081s021.pdf
     // shifting bits to get the number out
     alsByteSh0 = alsByte0 << 4;
